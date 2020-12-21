@@ -1,3 +1,16 @@
+# HIIT Timer
+
+Simple HIIT Timer PWA which can be added to mobile
+
+https://hiit-timer.surge.sh/
+
+## Credits
+
+Icon made by [Freepik](https://www.flaticon.com/authors/freepik) from [www.flaticon.com](https://www.flaticon.com/)
+
+
+---------
+
 This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
 
 ## Available Scripts
