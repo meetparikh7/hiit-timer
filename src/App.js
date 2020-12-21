@@ -23,9 +23,11 @@ class App extends Component {
       name: undefined,
       steps: undefined,
       sets: undefined,
+      totalTime: undefined,
       step: -1,
       curset: 0,
       timer: -1,
+      elapsedTime: 0,
       paused: false,
       done: false,
       popup: false
@@ -33,7 +35,7 @@ class App extends Component {
   }
 
   startTimer = () => {
-    const { step, timer, curset, paused } = this.state;
+    const { step, timer, curset, paused, elapsedTime } = this.state;
     const { steps, sets } = this.state;
     if (paused) return;
     if (timer <= 0) {
@@ -53,16 +55,31 @@ class App extends Component {
     } else {
       this.setState({ timer: timer - 1 });
     }
+    this.setState({ elapsedTime: elapsedTime + 1 });
   };
 
   run = index => {
     const workout = this.state.workouts[index];
-    const { name, steps, sets } = this.parseWorkout(workout);
+    const { name, steps, sets, totalTime } = this.parseWorkout(workout);
     if (this.interval) window.clearInterval(this.interval);
-    this.setState({ curIndex: index, workout, name, steps, sets }, () => {
-      this.interval = window.setInterval(this.startTimer, 1000);
-      this.startTimer();
-    });
+    this.setState(
+      {
+        curIndex: index,
+        workout,
+        name,
+        steps,
+        sets,
+        totalTime,
+        step: -1,
+        curset: 0,
+        timer: -1,
+        elapsedTime: 0
+      },
+      () => {
+        this.interval = window.setInterval(this.startTimer, 1000);
+        this.startTimer();
+      }
+    );
   };
 
   parseWorkout(workout) {
@@ -79,7 +96,8 @@ class App extends Component {
     return {
       name,
       steps,
-      sets
+      sets,
+      totalTime: steps.reduce((acc, { time }) => acc + time, 0) * sets
     };
   }
 
@@ -91,9 +109,6 @@ class App extends Component {
       {
         workouts,
         workout,
-        step: -1,
-        curset: 0,
-        timer: -1,
         done: false,
         popup: false
       },
@@ -121,9 +136,16 @@ class App extends Component {
     });
   };
 
-  render(props, state) {
+  render() {
     const { step, timer, curset, paused, done, popup } = this.state;
     const { workout, name, steps, sets, workouts, curIndex } = this.state;
+    const { totalTime, elapsedTime } = this.state;
+
+    const formatTime = time => {
+      const mins = Math.floor(time / 60).toString(10);
+      const secs = (time % 60).toString(10);
+      return `${mins}m ${secs.padStart(2, "0")}s`;
+    };
 
     return (
       <div style={{ textAlign: "center" }}>
@@ -152,11 +174,14 @@ class App extends Component {
             <h3>{name}</h3>
             <br />
             <h3>
-              Set {curset + 1} / {sets}
+              Set {curset + 1} / {sets} <br />
+              <span className="time">
+                [{formatTime(elapsedTime)} / {formatTime(totalTime)}]
+              </span>
             </h3>
             <br />
             <h2>{steps[step] && steps[step].title}</h2>
-            <h1>{timer}</h1>
+            <h1 className="time">{timer}</h1>
           </div>
         )}
         {curIndex === -1 && (

@@ -34,7 +34,7 @@ h2 {
 }
 
 h3 {
-  font-size: 32px;
+  font-size: 24px;
   margin: 4px;
 }
 
@@ -63,4 +63,8 @@ textarea {
 
 .deleteButton {
   width: 48px;
+}
+
+.time {
+  font-family: monospace;
 }
